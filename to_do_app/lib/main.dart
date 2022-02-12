@@ -38,9 +38,15 @@ class To_Do_App extends State<todoHome> {
       children: [
         IconButton(
             onPressed: () {
-              setState(() {
-                task.done = true;
-              });
+              if (task.done == false) {
+                setState(() {
+                  task.done = true;
+                });
+              } else {
+                setState(() {
+                  task.done = false;
+                });
+              }
             },
             icon: Icon(
                 task.done! ? Icons.check_box : Icons.check_box_outline_blank,
