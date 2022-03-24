@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mynotes/services/auth/auth_exceptions.dart';
 import 'package:mynotes/services/auth/auth_provider.dart';
@@ -8,7 +6,7 @@ import 'package:mynotes/services/auth/auth_user.dart';
 void main() {
   group('Mock Authentication', () {
     final provider = MockAuthProvider();
-    test('Should not initialize to begin with', () {
+    test('Should not be initialize to begin with', () {
       expect(provider.isInitialized, false);
     });
 
@@ -19,17 +17,17 @@ void main() {
       );
     });
 
-    test('Should be able to initialize', () async {
+    test('Should be able to be initialized', () async {
       await provider.initialize();
       expect(provider.isInitialized, true);
     });
 
-    test("User should be null after initialization", () {
+    test('User should be null after initialization', () {
       expect(provider.currentUser, null);
     });
 
     test(
-      'Should be able to initialize in less than 2 minutes',
+      'Should be able to initialize in less than 2 seconds',
       () async {
         await provider.initialize();
         expect(provider.isInitialized, true);
@@ -38,17 +36,17 @@ void main() {
     );
 
     test('Create user should delegate to login funciton', () async {
-      final badEmailUer = provider.createUser(
+      final badEmailUser = provider.createUser(
         email: 'foo@bar.com',
         password: 'anypassword',
       );
       expect(
-        badEmailUer,
+        badEmailUser,
         throwsA(const TypeMatcher<UserNotFoundAuthExcepion>()),
       );
 
       final badPasswordUser = provider.createUser(
-        email: 'foo@bar.com',
+        email: 'someone@bar.com',
         password: 'foobar',
       );
       expect(
@@ -56,11 +54,12 @@ void main() {
         throwsA(const TypeMatcher<WrongPasswordAuthExcepion>()),
       );
 
-      final user = provider.createUser(
+      final user = await provider.createUser(
         email: 'foo',
         password: 'bar',
       );
       expect(provider.currentUser, user);
+      expect(user.isEmailVerified, false);
     });
 
     test("Logged in user shoul be able to get verified", () {
@@ -130,7 +129,6 @@ class MockAuthProvider implements AuthProvider {
     if (_user == null) throw UserNotFoundAuthExcepion();
     await Future.delayed(const Duration(seconds: 1));
     _user = null;
-    throw UnimplementedError();
   }
 
   @override
